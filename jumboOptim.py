@@ -75,19 +75,37 @@ def coupage_horizontale(jumbo,ordo,type1,type2, cut):
     print(plate2[2], plate2[3], plate2[4], plate2[5])
     return plate1,plate2
 
-def max_double(items,maxPre):
+def max_double(items,maxPre, iPre):
     indice = 0
     valeur = 0
     maxXY = 0 #Max between width & length
     n= len(items)
-    for i in range(n):
-        x = int(items[i][1])
-        y = int(items[i][2])
-        if ( x <= maxPre and y <= maxPre):
-            maxXY = max(x,y)
-            if (maxXY >= valeur):
-                valeur = maxXY
-                indice = i
+    if(iPre == -1):
+        for i in range(n):
+            x = int(items[i][1])
+            y = int(items[i][2])
+            if ( x <= maxPre and y <= maxPre):
+                maxXY = max(x,y)
+                if (maxXY >= valeur):
+                    valeur = maxXY
+                    indice = i
+    else:
+        for i in range(iPre):
+            x = int(items[i][1])
+            y = int(items[i][2])
+            if ( x <= maxPre and y <= maxPre):
+                maxXY = max(x,y)
+                if (maxXY >= valeur):
+                    valeur = maxXY
+                    indice = i
+        for i in range(iPre+1, n):
+            x = int(items[i][1])
+            y = int(items[i][2])
+            if ( x <= maxPre and y <= maxPre):
+                maxXY = max(x,y)
+                if (maxXY >= valeur):
+                    valeur = maxXY
+                    indice = i
     maxPre = valeur
     #print(maxPre)
     return indice, maxPre
@@ -144,22 +162,111 @@ def save(allNodes, name):
         out.write('\n')
     out.close()
        
+def doublage_items():
+    #Pour tenir compte de la posibilité d'inverser les pièces
+    n = len (items)
+    jumbo = []
+    for i in range (n):
+        jumbo = copy.deepcopy(items[i])
+        jumbo[0] =  -int(jumbo[0])
+        if(jumbo[0] == 0):
+            jumbo[0] = n
+        save = jumbo[1]
+        jumbo[1] = jumbo[2]
+        jumbo[2] = save
+        items.append(jumbo)
+        
+def indice_valable(indice_boucle,indice_boucle1,indice_boucle2):
+    if(indice_boucle == indice_boucle1):
+        return False
+    if(indice_boucle == indice_boucle2):
+        return False
+    if(indice_boucle2 == indice_boucle1):
+        return False
+    else:
+        return True
+    
+def calcul():
+    hauteur = 0
+    largeur = 0
+    #liste des indices qui sont valables
+    global liste_indval
+    liste_indval = []
+    #listes des id qui sont valables
+    liste_idval = []
+    #liste qui determine ou on se trouve
+    liste_indpre = []
+    indice_boucle = 0
+    indice_boucle1 = 1
+    indice_boucle2 = 2
+    n = len (items)
+    while(hauteur < hauteurjumbo and largeur < largeurjumbo and indice_boucle < n):
+        liste_indpre.append(indice_boucle)
+        #ajout des distances avec le nouveau positionnement
+        hauteur = hauteur + int(items[indice_boucle][1])
+        largeur = largeur + int(items[indice_boucle][1])
+        while(hauteur < hauteurjumbo and largeur < largeurjumbo and indice_boucle1 < n):
+            liste_indpre.append(indice_boucle1)
+            #ajout des distances avec le nouveau positionnement
+            hauteur = hauteur + int(items[indice_boucle1][1])
+            largeur = largeur + int(items[indice_boucle1][1])
+            while(hauteur < hauteurjumbo and largeur < largeurjumbo and indice_boucle2 < n):
+                liste_indpre.append(indice_boucle2)
+                #ajout des distances avec le nouveau positionnement
+                hauteur = hauteur + int(items[indice_boucle2][1])
+                largeur = largeur + int(items[indice_boucle2][1])
+                #ajout de l'indice et id apres supression des doublets car valable
+                if (indice_valable(indice_boucle,indice_boucle1,indice_boucle2)):
+                    liste_indval.append([indice_boucle,indice_boucle1,indice_boucle2])
+                    liste_idval.append([int(items[indice_boucle][0]),int(items\
+                                        [indice_boucle1][0]),int(items[indice_boucle2][0])])
+                #retire distance
+                hauteur = hauteur - int(items[indice_boucle2][1])
+                largeur = largeur - int(items[indice_boucle2][1])            
+                liste_indpre.pop()
+                #implementation boucle
+                indice_boucle2 = indice_boucle2 + 1
+             #retire distance
+            hauteur = hauteur - int(items[indice_boucle1][1])
+            largeur = largeur - int(items[indice_boucle1][1])
+            liste_indpre.pop()
+            #implementation boucle
+            indice_boucle1 = indice_boucle1 + 1
+            #remise a la valeur initial de l'indice pour la prochaine boucle
+            indice_boucle2 = copy.copy(indice_boucle1)
+        liste_indpre.pop()
+         #retire distance
+        hauteur = hauteur - int(items[indice_boucle][1])
+        largeur = largeur - int(items[indice_boucle][1])
+        #implementation boucle
+        indice_boucle = indice_boucle + 1
+        #remise a la valeur initial de l'indice pour la prochaine boucle
+        indice_boucle1 = copy.copy(indice_boucle)
+    return liste_indval,liste_idval
+    
 def main():
     global items
     #Initialise all jumbos
+    global hauteurjumbo 
+    hauteurjumbo= 3120
+    global largeurjumbo
+    largeurjumbo = 6000
     jumbos = []
     jumbos = init_jumbo()
     
-    for i in range(1, 11):
+    for i in range(1, 4):
         #Init items
         init_items("A" + str(i))
+        
+        doublage_items()
+        L,M = calcul()
         
         #Init nodes
         maxPrecedent = 6000  
         nodeactuel = jumbos[i]
         allNodes = [jumbos[i]] #table that has all the nodes for saving
         
-        maxi = max_double(items, maxPrecedent)[0]
+        maxi = max_double(items, maxPrecedent, -1)[0]
         maxXY = max(int(items[maxi][1]), int(items[maxi][2]))
         #Cut Vertical 1
         k = 0
@@ -174,12 +281,12 @@ def main():
             nodeactuel = allNodes[k]
             
             #Calculate next max width (knowing we can rotate objects)
-            maxi = max_double(items, maxi)[0]
+            maxi = max_double(items, maxXY, maxi)[0]
             maxXY = max(int(items[maxi][1]), int(items[maxi][2]))
-            maxPrecedent = max_double(items, maxi)[1]
+#            maxPrecedent = max_double(items, maxi)[1]
         
         #Cut Horizontal 1
-        k = 0
+        k = search_index(k, allNodes, 1)
         while (maxXY < nodeactuel[5]): #Check when no items fit
             #cut the nodes
             cutNodes = coupage_horizontale(jumbos[i], maxXY, -2, -2, 2)
@@ -191,12 +298,12 @@ def main():
             nodeactuel = allNodes[k]
             
             #Calculate next max width (knowing we can rotate objects)
-            maxi = max_double(items, maxi)[0]
+            maxi = max_double(items, maxXY, maxi)[0]
             maxXY = max(int(items[maxi][1]), int(items[maxi][2]))
-            maxPrecedent = max_double(items, maxi)[1]
+#            maxPrecedent = max_double(items, maxi)[1]
         
         #Cut Vertical 2
-        k = 0
+        k = search_index(k, allNodes, 2)
         while (maxXY < nodeactuel[4]): #Check when no items fit
             #cut the nodes
             cutNodes = coupage_verticale(jumbos[i], maxXY, -2, -2, 3)
@@ -208,9 +315,9 @@ def main():
             nodeactuel = allNodes[k]
             
             #Calculate next max width (knowing we can rotate objects)
-            maxi = max_double(items, maxi)[0]
+            maxi = max_double(items, maxXY, maxi)[0]
             maxXY = max(int(items[maxi][1]), int(items[maxi][2]))
-            maxPrecedent = max_double(items, maxi)[1]
+#            maxPrecedent = max_double(items, maxi)[1]
                 
         allNodes2 = [['PLATE_ID', 'NODE_ITEM', 'X', 'Y', 'WIDTH', 'HEIGHT', 'TYPE', 'CUT', 'PARENT']] + allNodes
         save(allNodes2, "A" + str(i))
