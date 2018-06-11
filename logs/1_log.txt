@@ -1,0 +1,17 @@
+
+		----------- Start files parsing -----------
+
+	--- Parsing Optimization Parameters file ---
+	Optimization Parameters file path: instances_checker/global_param.csv
+	nPlates: 100
+	widthPlates: 6000
+	heightPlates: 3210
+	min1Cut: 0
+	max1Cut: 6000
+	min2Cut: 0
+	minWaste: 0
+	--- Optimization Parameters file parsed successfully ---
+
+	--- Unable to Open Batch file / file not found ---
+	Batch file path: instances_checker/1_batch.csv
+	--- Batch file not parsed ---
