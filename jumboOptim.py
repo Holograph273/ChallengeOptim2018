@@ -87,12 +87,13 @@ def max_double(items,maxPre):
             maxXY = max(x,y)
             if (maxXY >= valeur):
                 valeur = maxXY
+                indice = i
     maxPre = valeur
     #print(maxPre)
-    return indice
+    return indice, maxPre
   
 def search_index(k, allNodes, level):   
-    for i in range(k, len(allNodes)):
+    for i in range(k+1, len(allNodes)):
         if (allNodes[i][7] == level):
             return i
 
@@ -133,6 +134,15 @@ def save(allNodes, name):
 #    with open(name, 'wb') as file:
 #        writer = csv.writer(file, dialect="excel")
 #        writer.writerows(allNodes)
+    out = open(name, 'w')
+    for row in allNodes:
+        for column in row:
+            try:
+                out.write('%d;' % column)
+            except:
+                out.write('%s;' % column)
+        out.write('\n')
+    out.close()
        
 def main():
     global items
@@ -149,13 +159,13 @@ def main():
         nodeactuel = jumbos[i]
         allNodes = [jumbos[i]] #table that has all the nodes for saving
         
-        maxi = max_double(items, maxPrecedent)
-        
+        maxi = max_double(items, maxPrecedent)[0]
+        maxXY = max(int(items[maxi][1]), int(items[maxi][2]))
         #Cut Vertical 1
         k = 0
-        while (maxi < nodeactuel[4]): #Check when no items fit
+        while (maxXY < nodeactuel[4]): #Check when no items fit
             #cut the nodes
-            cutNodes = coupage_verticale(jumbos[i], maxi, -2, -2, 1)
+            cutNodes = coupage_verticale(jumbos[i], maxXY, -2, -2, 1)
 
             allNodes.append(cutNodes[0])
             allNodes.append(cutNodes[1])
@@ -164,13 +174,15 @@ def main():
             nodeactuel = allNodes[k]
             
             #Calculate next max width (knowing we can rotate objects)
-            maxi = max_double(items, maxi) 
+            maxi = max_double(items, maxi)[0]
+            maxXY = max(int(items[maxi][1]), int(items[maxi][2]))
+            maxPrecedent = max_double(items, maxi)[1]
         
         #Cut Horizontal 1
         k = 0
-        while (maxi < nodeactuel[5]): #Check when no items fit
+        while (maxXY < nodeactuel[5]): #Check when no items fit
             #cut the nodes
-            cutNodes = coupage_horizontale(jumbos[i], maxi, -2, -2, 2)
+            cutNodes = coupage_horizontale(jumbos[i], maxXY, -2, -2, 2)
 
             allNodes.append(cutNodes[0])
             allNodes.append(cutNodes[1])
@@ -179,13 +191,15 @@ def main():
             nodeactuel = allNodes[k]
             
             #Calculate next max width (knowing we can rotate objects)
-            maxi = max_double(items, maxi) 
+            maxi = max_double(items, maxi)[0]
+            maxXY = max(int(items[maxi][1]), int(items[maxi][2]))
+            maxPrecedent = max_double(items, maxi)[1]
         
         #Cut Vertical 2
         k = 0
-        while (maxi < nodeactuel[4]): #Check when no items fit
+        while (maxXY < nodeactuel[4]): #Check when no items fit
             #cut the nodes
-            cutNodes = coupage_verticale(jumbos[i], maxi, -2, -2, 3)
+            cutNodes = coupage_verticale(jumbos[i], maxXY, -2, -2, 3)
 
             allNodes.append(cutNodes[0])
             allNodes.append(cutNodes[1])
@@ -194,9 +208,11 @@ def main():
             nodeactuel = allNodes[k]
             
             #Calculate next max width (knowing we can rotate objects)
-            maxi = max_double(items, maxi) 
+            maxi = max_double(items, maxi)[0]
+            maxXY = max(int(items[maxi][1]), int(items[maxi][2]))
+            maxPrecedent = max_double(items, maxi)[1]
                 
-        allNodes2 = [['ITEM_ID', 'LENGTH_ITEM', 'WIDTH_ITEM', 'STACK', 'SEQUENCE']] + allNodes
+        allNodes2 = [['PLATE_ID', 'NODE_ITEM', 'X', 'Y', 'WIDTH', 'HEIGHT', 'TYPE', 'CUT', 'PARENT']] + allNodes
         save(allNodes2, "A" + str(i))
     
 main()

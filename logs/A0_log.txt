@@ -1,0 +1,66 @@
+
+		----------- Start files parsing -----------
+
+	--- Parsing Optimization Parameters file ---
+	Optimization Parameters file path: instances_checker/global_param.csv
+	nPlates: 100
+	widthPlates: 6000
+	heightPlates: 3210
+	min1Cut: 0
+	max1Cut: 6000
+	min2Cut: 0
+	minWaste: 0
+	--- Optimization Parameters file parsed successfully ---
+
+	--- Parsing Batch file ---
+	Batch file path: instances_checker/A0_batch.csv
+	Items: 3
+	Stacks: 3
+	--- Batch file parsed successfully ---
+
+	--- Parsing Solution file ---
+	Solution file path: instances_checker/A0_solution.csv
+	Plates: 1
+	Node 9: is a residual
+	Nodes: 10
+	branches: 2
+	Items: 3
+	Residuals: 1
+	Waste: 3
+	Used Cut Stages: 3
+	Tree structure built
+	--- Solution file parsed successfully ---
+		----------- End of files parsing ----------
+
+	--- Item production constraint verification ---
+	Item production constraint verified successfully
+	--- End of Item production constraint verification ---
+
+	--- Sequence & Identity constraints verification ---
+	Sequence Constraint verified successfully
+	Identity Constraint verified successfully
+	--- End of Sequence & Identity constraints verification ---
+
+	--- Dimensions constraint verification ---
+	Dimension constraint verified successfully
+	--- End of Dimension constraint verification ---
+
+	--- Display Plates Area Usage ---
+	---------------------- Summary --------------------------
+	|  Plates               |  Used Area    |  Wasted Area  |
+	---------------------------------------------------------
+	|  Plate 0		|  53.3112%	|  46.6888%	|
+	---------------------------------------------------------
+	|  Total (1 plate)	|  53.3112%	|  46.6888%	|
+	---------------------------------------------------------
+
+	------------------------ Residual -----------------------
+	|  Plate id             |  Width        |  Area %       |
+	---------------------------------------------------------
+	|  Plate 0		|  5400mm  	|  90%  	|
+	---------------------------------------------------------
+	--- End of Display Plates Area Usage ---
+
+	------------------------------------------------------------
+               SOLUTION VALIDATED SUCCESSFULLY               
+	------------------------------------------------------------
