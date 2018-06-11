@@ -21,8 +21,8 @@ def coupage_verticale(jumbo,absc,type1,type2, cut):
     plate1[2] = jumbo[2]
     plate2[2] = jumbo[2] + absc
     # Y
-    plate1[3] = 0
-    plate2[3] = 0
+    plate1[3] = jumbo[3]
+    plate2[3] = jumbo[3]
     # Width
     plate1[4] = absc
     plate2[4] = jumbo[4] - absc
@@ -52,11 +52,11 @@ def coupage_horizontale(jumbo,ordo,type1,type2, cut):
     plate1[1] = jumbo[1] + 1
     plate2[1] = jumbo[1] + 2
     # X
-    plate1[2] = 0
-    plate2[2] = 0
+    plate1[2] = jumbo[2]
+    plate2[2] = jumbo[2]
     # Y
-    plate1[3] = 0
-    plate2[3] = ordo
+    plate1[3] = jumbo[3]
+    plate2[3] = jumbo[3] + ordo
     # Widht
     plate1[4] = jumbo[4]
     plate2[4] = jumbo[4]
@@ -72,29 +72,23 @@ def coupage_horizontale(jumbo,ordo,type1,type2, cut):
     #parent
     plate1[8] = jumbo[1]
     plate2[8] = jumbo[1]
-    
+    print(plate2[2], plate2[3], plate2[4], plate2[5])
     return plate1,plate2
 
 def max_double(items,maxPre):
     indice = 0
     valeur = 0
-    maxXY = 0 #Max entre width et length
+    maxXY = 0 #Max between width & length
     n= len(items)
     for i in range(n):
         x = int(items[i][1])
-        y =int(items[i][2])
+        y = int(items[i][2])
         if ( x <= maxPre and y <= maxPre):
             maxXY = max(x,y)
             if (maxXY >= valeur):
                 valeur = maxXY
-#        if((int(items[i][1]) > int(valeur) or int(items[i][2]) > int(valeur)) and (int(items[i][1]) < Maxprecedent or int(items[i][2]) < Maxprecedent)):
-#            indice = i
-#            if(int(items[i][1]) > int(items[i][2])):
-#                valeur = items[i][1]       
-#            else:
-#                valeur = items[i][2]
     maxPre = valeur
-    print(maxPre)
+    #print(maxPre)
     return indice
   
 def search_index(k, allNodes, level):   
@@ -130,12 +124,15 @@ def init_items(name):
     
 def save(allNodes, name):
     name += "_solution.csv"
-    for node in allNodes:
-        sep = ";"
-        sep.join(node)
-    with open(name, 'w') as file:
-        writer = csv.writer(file)
-        writer.writerows(allNodes)
+#    for i in range(len(allNodes)):
+#        for j in range(len(allNodes[i])):
+#            allNodes[i][j] = str(allNodes[i][j])
+#        sep = ";"
+#        allNodes[i] = sep.join(allNodes[i])
+    print(allNodes)
+#    with open(name, 'wb') as file:
+#        writer = csv.writer(file, dialect="excel")
+#        writer.writerows(allNodes)
        
 def main():
     global items
@@ -173,7 +170,7 @@ def main():
         k = 0
         while (maxi < nodeactuel[5]): #Check when no items fit
             #cut the nodes
-            cutNodes = coupage_verticale(jumbos[i], maxi, -2, -2, 2)
+            cutNodes = coupage_horizontale(jumbos[i], maxi, -2, -2, 2)
 
             allNodes.append(cutNodes[0])
             allNodes.append(cutNodes[1])
@@ -199,9 +196,8 @@ def main():
             #Calculate next max width (knowing we can rotate objects)
             maxi = max_double(items, maxi) 
                 
-        
-        allNodes.append(['ITEM_ID', 'LENGTH_ITEM', 'WIDTH_ITEM', 'STACK', 'SEQUENCE'], 0)
-        save(allNodes, "A" + str(i))
+        allNodes2 = [['ITEM_ID', 'LENGTH_ITEM', 'WIDTH_ITEM', 'STACK', 'SEQUENCE']] + allNodes
+        save(allNodes2, "A" + str(i))
     
 main()
 
