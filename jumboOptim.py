@@ -38,7 +38,7 @@ def coupage_verticale(jumbo,absc,type1,type2, cut):
     #parent
     plate1[8] = jumbo[1]
     plate2[8] = jumbo[1]
-    print(plate2[2], plate2[3], plate2[4], plate2[5])
+    #print(plate2[2], plate2[3], plate2[4], plate2[5])
     return plate1,plate2
 
 def coupage_horizontale(jumbo,ordo,type1,type2, cut):
@@ -75,19 +75,26 @@ def coupage_horizontale(jumbo,ordo,type1,type2, cut):
     
     return plate1,plate2
 
-def max_double(items,Maxprecedent):
+def max_double(items,maxPre):
     indice = 0
     valeur = 0
+    maxXY = 0 #Max entre width et length
     n= len(items)
     for i in range(n):
-        if((int(items[i][1]) > int(valeur) or int(items[i][2]) > int(valeur)) and (int(items[i][1]) < Maxprecedent or int(items[i][2]) < Maxprecedent)):
-            indice = i
-            if(int(items[i][1]) > int(items[i][2])):
-                valeur = items[i][1]       
-            else:
-                valeur = items[i][2]
-    Maxprecedent = valeur
-    #print(Maxprecedent)
+        x = int(items[i][1])
+        y =int(items[i][2])
+        if ( x <= maxPre and y <= maxPre):
+            maxXY = max(x,y)
+            if (maxXY >= valeur):
+                valeur = maxXY
+#        if((int(items[i][1]) > int(valeur) or int(items[i][2]) > int(valeur)) and (int(items[i][1]) < Maxprecedent or int(items[i][2]) < Maxprecedent)):
+#            indice = i
+#            if(int(items[i][1]) > int(items[i][2])):
+#                valeur = items[i][1]       
+#            else:
+#                valeur = items[i][2]
+    maxPre = valeur
+    print(maxPre)
     return indice
   
 def search_index(k, allNodes, level):   
@@ -160,7 +167,7 @@ def main():
             nodeactuel = allNodes[k]
             
             #Calculate next max width (knowing we can rotate objects)
-            maxi = max_double(items, maxPrecedent) 
+            maxi = max_double(items, maxi) 
         
         #Cut Horizontal 1
         k = 0
@@ -175,7 +182,7 @@ def main():
             nodeactuel = allNodes[k]
             
             #Calculate next max width (knowing we can rotate objects)
-            maxi = max_double(items, maxPrecedent) 
+            maxi = max_double(items, maxi) 
         
         #Cut Vertical 2
         k = 0
@@ -190,7 +197,7 @@ def main():
             nodeactuel = allNodes[k]
             
             #Calculate next max width (knowing we can rotate objects)
-            maxi = max_double(items, maxPrecedent) 
+            maxi = max_double(items, maxi) 
                 
         
         allNodes.append(['ITEM_ID', 'LENGTH_ITEM', 'WIDTH_ITEM', 'STACK', 'SEQUENCE'], 0)
